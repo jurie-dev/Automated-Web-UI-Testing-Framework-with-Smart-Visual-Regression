@@ -1,8 +1,7 @@
-from PIL import Image, ImageChops
-import pytest
-import pytest_html
 import os
 import time
+import pytest
+import pytest_html
 from pages.login_page import LoginPage
 from pages.inventory_page import InventoryPage
 from utils.visual_compare import compare_images
@@ -12,16 +11,6 @@ def ensure_directories():
     os.makedirs("screenshots/baseline", exist_ok=True)
     os.makedirs("screenshots/current", exist_ok=True)
     os.makedirs("screenshots/diff", exist_ok=True)
-
-
-def compare_images(baseline, current, diff):
-    image1 = Image.open(baseline)
-    image2 = Image.open(current)
-    diff_img = ImageChops.difference(image1, image2)
-    if diff_img.getbbox():
-        diff_img.save(diff)
-        return False
-    return True
 
 
 def test_cart_visual_regression(driver):
@@ -66,5 +55,3 @@ def test_login_ui(driver, request, browser):
         if os.path.exists(diff_path):
             extra.append(pytest_html.extras.image(diff_path))
         request.node.extra = extra
-
-    driver.quit()
