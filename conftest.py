@@ -9,6 +9,8 @@ def driver(request, browser):
         driver = webdriver.Chrome()
     elif browser == "firefox":
         driver = webdriver.Firefox()
+    elif browser == "edge":
+        driver = webdriver.Edge()
     else:
         raise ValueError(f"Unsupported browser: {browser}")
 
@@ -17,12 +19,14 @@ def driver(request, browser):
 
 
 def pytest_addoption(parser):
-    parser.addoption("--browser", action="store", default="chrome")
+    parser.addoption("--browser", action="store", default="chrome",
+                     help="Browser to run tests against: chrome, firefox, or edge")
 
 
 @pytest.fixture
 def browser(request):
     return request.config.getoption("--browser")
+
 
 @pytest.hookimpl(hookwrapper=True)
 def pytest_runtest_makereport(item, call):
