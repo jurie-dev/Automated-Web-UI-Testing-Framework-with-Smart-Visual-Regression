@@ -1,16 +1,27 @@
 import os
 import pytest
+import tempfile
 from selenium import webdriver
 
 
 @pytest.fixture
 def driver(request, browser):
     if browser == "chrome":
-        driver = webdriver.Chrome()
+        chrome_options = webdriver.ChromeOptions()
+        
+        # ✅ Use a fresh temporary profile
+        tmp_dir = tempfile.mkdtemp()
+        chrome_options.add_argument(f"--user-data-dir={tmp_dir}")
+        
+        driver = webdriver.Chrome(options=chrome_options)
+
     elif browser == "firefox":
         driver = webdriver.Firefox()
+
     elif browser == "edge":
-        driver = webdriver.Edge()
+        edge_options = webdriver.EdgeOptions()
+        driver = webdriver.Edge(options=edge_options)
+
     else:
         raise ValueError(f"Unsupported browser: {browser}")
 
