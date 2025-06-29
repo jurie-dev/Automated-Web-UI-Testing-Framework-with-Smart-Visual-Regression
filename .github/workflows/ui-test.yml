@@ -1,0 +1,45 @@
+name: UI Visual Regression Tests
+
+on: [push, pull_request]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        browser: [chrome, firefox]
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          python -m venv venv
+          source venv/bin/activate
+          pip install -r requirements.txt
+
+      - name: Set up browser (${{ matrix.browser }})
+        run: |
+          if [ "${{ matrix.browser }}" == "chrome" ]; then
+            sudo apt-get update
+            sudo apt-get install -y chromium-browser
+            echo "CHROME binary installed"
+          else
+            sudo apt-get update
+            sudo apt-get install -y firefox
+            echo "Firefox binary installed"
+          fi
+
+      - name: Run tests
+        env:
+          BROWSER: ${{ matrix.browser }}
+        run: |
+          source venv/bin/activate
+          pytest --html=report.html --self-contained-html
